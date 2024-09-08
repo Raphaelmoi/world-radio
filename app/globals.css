@@ -31,3 +31,16 @@ body {
     text-wrap: balance;
   }
 }
+
+body .cesium-viewer-fullscreenContainer,
+.cesium-viewer-bottom {
+  display: none !important;
+}
+
+.cesium-viewer canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100dvw;
+  height: 100dvh;
+}

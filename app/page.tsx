@@ -1,76 +1,98 @@
 "use client"
 import { useEffect, useState } from "react";
-import GlobeGl from "./components/Globe";
 import { RadioStation } from "./types/radio-station";
-import { TbExternalLink } from "react-icons/tb";
+import dynamic from "next/dynamic";
+import CurrentRadioPlayer from "./components/CurrentRadioPlayer";
+import { FeatureCollection } from "./types/CapitalsGeojson";
+
+const Cesium = dynamic(
+  () => import('./components/Cesium'),
+  { ssr: false }
+)
+
+const LS_FAVORITE_RADIOS_NAME = 'favorites-radio'
+
 
 export default function Home() {
   const [radios, setRadios] = useState<RadioStation[]>([])
   const [currentRadio, setCurrentRadio] = useState<RadioStation | null>(null)
+  const [currentRadioIndex, setCurrentRadioIndex] = useState(0)
+  const [favoriteRadios, setfavoriteRadios] = useState<string[]>([])
 
-  function getRandomInt(array: any[]): number {
-    return Math.floor(Math.random() * array.length);
+  function pickNextRadio(direction: number) {
+    let nextRadio = currentRadioIndex + direction;
+    if (nextRadio >= radios.length) nextRadio = 0;
+    else if (nextRadio < 0) nextRadio = radios.length - 1;
+
+    setCurrentRadioIndex(nextRadio);
+    setCurrentRadio(radios[nextRadio]);
   }
 
-  function pickRandomRadio() {
-    setCurrentRadio(radios[getRandomInt(radios)])
+  function toggleFavoriteRadio(radioId: string) {
+    console.log("toggleFavoriteRadio");
+
+    if (favoriteRadios.includes(radioId) === false) {
+      setfavoriteRadios(prevRadios => [...prevRadios, radioId]);
+    } else {
+      setfavoriteRadios(prevRadios => prevRadios.filter(radio => radio !== radioId));
+    }
   }
+
+  // Store favorites any times favoritesRadio array change
+  useEffect(() => {
+    localStorage.setItem(LS_FAVORITE_RADIOS_NAME, JSON.stringify(favoriteRadios))
+  }, [favoriteRadios])
+
 
   useEffect(() => {
+
+    const storedFavorites = localStorage.getItem(LS_FAVORITE_RADIOS_NAME)
+    if (storedFavorites) setfavoriteRadios(JSON.parse(storedFavorites))
+
     // https://api.radio-browser.info/
     fetch('https://at1.api.radio-browser.info/json/stations/search').then(res => res.json())
       .then((fetchedRadios: RadioStation[]) => {
+        const shuffledArray = fetchedRadios.sort(() => Math.random() - 0.5);
 
-        fetchedRadios.map(r => r.url_resolved.replace('http://', 'https://'))
+        setRadios(shuffledArray)
 
-        console.log(fetchedRadios);
+        fetch('/capitals.geojson').then(res => res.json()).then((capitals: FeatureCollection) => {
 
-        // const hsl = fetchedRadios.filter(r => r.hls === 1)
-        // console.log("hsl", hsl);
+          // For radios that have a country specified but lack coordinates, assign the coordinates of the capital city of that country. 
+          // Also, set the HSL value to 3 to filter out these radios and prevent them from being displayed on the map.
+          fetchedRadios
+            .filter((r) => r.country && !r.geo_lat)
+            .forEach(radio => {
 
-        setRadios(fetchedRadios)
+              const cap = capitals.features.find((capital: any) => radio.countrycode === capital.id)
+              if (cap) {
+                radio.geo_lat = cap.geometry.coordinates[1];
+                radio.geo_long = cap.geometry.coordinates[0];
+                radio.hls = 3
+              }
+            })
 
-        const r = getRandomInt(fetchedRadios)
-        setCurrentRadio(fetchedRadios[r])
-
+          setTimeout(() => {
+            setCurrentRadio(shuffledArray[0])
+          }, 4000);
+        })
       });
   }, [])
 
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
-      <GlobeGl radios={radios} pickRadio={(pickedRadio: RadioStation) => setCurrentRadio(pickedRadio)} pickedRadio={currentRadio} />
+    <main className="flex min-h-screen flex-col items-center justify-between relative">
+
+      {<Cesium radios={radios} pickRadio={(pickedRadio: RadioStation) => setCurrentRadio(pickedRadio)} pickedRadio={currentRadio} />}
 
       {currentRadio &&
-        <div className="bg-slate-800 w-9/12 absolute bottom-4 p-4 rounded-md flex">
-
-          <img src={currentRadio.favicon} className="size-16 mr-2" onClick={() => pickRandomRadio()} />
-
-          <div className="flex items-center w-full">
-            <div className="mr-4 flex-1">
-              <div className="flex w-full items-center justify-between">
-                <h3>
-                  {currentRadio.name}
-                </h3>
-                <a href={currentRadio.homepage} target="_blank" rel="noopener" className="flex items-center" >
-                  <TbExternalLink />
-                  Visit page
-                </a>
-              </div>
-              <span className="text-gray-400  ">
-                {currentRadio.country}
-              </span>
-
-              <span className="text-gray-400  ">
-                {currentRadio.geo_lat}, {currentRadio.geo_long}
-              </span>
-            </div>
-
-            <audio controls src={currentRadio.url_resolved} autoPlay className=""></audio>
-
-          </div>
-        </div>
+        <CurrentRadioPlayer
+          currentRadio={currentRadio}
+          pickNextRadio={pickNextRadio}
+          favoriteRadios={favoriteRadios}
+          toggleFavoriteRadio={toggleFavoriteRadio}
+        />
       }
-    </main>
+    </main >
   );
 }
