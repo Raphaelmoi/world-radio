@@ -58,9 +58,9 @@ export default function CurrentRadioPlayer({ currentRadio, pickNextRadio, favori
                         {currentRadio.country}
                     </span>
                     {currentRadio.tags && (
-                        <span className="text-gray-400 text-xs capitalize">
+                        <div className="text-gray-400 text-xs capitalize truncate overflow-hidden max-w-xl">
                             {currentRadio.tags.split(',').join(' ')}
-                        </span>
+                        </div>
                     )}
                 </div>
 

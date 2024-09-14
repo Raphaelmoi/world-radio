@@ -4,6 +4,7 @@ import { RadioStation } from "./types/radio-station";
 import dynamic from "next/dynamic";
 import CurrentRadioPlayer from "./components/CurrentRadioPlayer";
 import { FeatureCollection } from "./types/CapitalsGeojson";
+import SelectMapLayers from "./components/SelectMapLayers";
 
 const Cesium = dynamic(
   () => import('./components/Cesium'),
@@ -12,12 +13,11 @@ const Cesium = dynamic(
 
 const LS_FAVORITE_RADIOS_NAME = 'favorites-radio'
 
-
 export default function Home() {
   const [radios, setRadios] = useState<RadioStation[]>([])
   const [currentRadio, setCurrentRadio] = useState<RadioStation | null>(null)
   const [currentRadioIndex, setCurrentRadioIndex] = useState(0)
-  const [favoriteRadios, setfavoriteRadios] = useState<string[]>([])
+  const [favoriteRadios, setFavoriteRadios] = useState<string[]>([])
 
   function pickNextRadio(direction: number) {
     let nextRadio = currentRadioIndex + direction;
@@ -29,61 +29,52 @@ export default function Home() {
   }
 
   function toggleFavoriteRadio(radioId: string) {
-    console.log("toggleFavoriteRadio");
-
-    if (favoriteRadios.includes(radioId) === false) {
-      setfavoriteRadios(prevRadios => [...prevRadios, radioId]);
+    let favArray = favoriteRadios
+    if (favArray.includes(radioId)) {
+      favArray = favArray.filter(radio => radio !== radioId)
     } else {
-      setfavoriteRadios(prevRadios => prevRadios.filter(radio => radio !== radioId));
+      favArray = [...favArray, radioId]
     }
+    localStorage.setItem(LS_FAVORITE_RADIOS_NAME, JSON.stringify(favArray))
+    setFavoriteRadios(favArray)
   }
 
-  // Store favorites any times favoritesRadio array change
   useEffect(() => {
-    localStorage.setItem(LS_FAVORITE_RADIOS_NAME, JSON.stringify(favoriteRadios))
-  }, [favoriteRadios])
+    const storedFavorites = localStorage.getItem(LS_FAVORITE_RADIOS_NAME);
+    if (storedFavorites) {
+      setFavoriteRadios(JSON.parse(storedFavorites));
+    }
 
+    const fetchData = async () => {
+      const fetchedRadios: RadioStation[] = await fetch('https://at1.api.radio-browser.info/json/stations/search')
+        .then(res => res.json());
 
-  useEffect(() => {
+      const capitals: FeatureCollection = await fetch("/capitals.geojson").then(res => res.json());
 
-    const storedFavorites = localStorage.getItem(LS_FAVORITE_RADIOS_NAME)
-    if (storedFavorites) setfavoriteRadios(JSON.parse(storedFavorites))
+      fetchedRadios
+        .filter(r => r.country && !r.geo_lat)
+        .forEach(radio => {
+          const capital = capitals.features.find(cap => radio.countrycode === cap.id);
+          if (capital) {
+            radio.geo_lat = capital.geometry.coordinates[1];
+            radio.geo_long = capital.geometry.coordinates[0];
+            radio.hls = 3; // Filter these out on the map
+          }
+        });
 
-    // https://api.radio-browser.info/
-    fetch('https://at1.api.radio-browser.info/json/stations/search').then(res => res.json())
-      .then((fetchedRadios: RadioStation[]) => {
-        const shuffledArray = fetchedRadios.sort(() => Math.random() - 0.5);
+      const shuffledRadios = fetchedRadios.sort(() => Math.random() - 0.5);
+      setRadios(shuffledRadios);
+      setCurrentRadio(shuffledRadios[0]);
+    };
 
-        setRadios(shuffledArray)
-
-        fetch('/capitals.geojson').then(res => res.json()).then((capitals: FeatureCollection) => {
-
-          // For radios that have a country specified but lack coordinates, assign the coordinates of the capital city of that country. 
-          // Also, set the HSL value to 3 to filter out these radios and prevent them from being displayed on the map.
-          fetchedRadios
-            .filter((r) => r.country && !r.geo_lat)
-            .forEach(radio => {
-
-              const cap = capitals.features.find((capital: any) => radio.countrycode === capital.id)
-              if (cap) {
-                radio.geo_lat = cap.geometry.coordinates[1];
-                radio.geo_long = cap.geometry.coordinates[0];
-                radio.hls = 3
-              }
-            })
-
-          setTimeout(() => {
-            setCurrentRadio(shuffledArray[0])
-          }, 4000);
-        })
-      });
-  }, [])
+    fetchData();
+  }, []);
 
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between relative">
 
-      {<Cesium radios={radios} pickRadio={(pickedRadio: RadioStation) => setCurrentRadio(pickedRadio)} pickedRadio={currentRadio} />}
+      <Cesium radios={radios} pickRadio={(pickedRadio: RadioStation) => setCurrentRadio(pickedRadio)} pickedRadio={currentRadio} />
 
       {currentRadio &&
         <CurrentRadioPlayer
@@ -93,6 +84,9 @@ export default function Home() {
           toggleFavoriteRadio={toggleFavoriteRadio}
         />
       }
+      <div className="absolute top-6 right-6">
+        <SelectMapLayers />
+      </div>
     </main >
   );
 }
