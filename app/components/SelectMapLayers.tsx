@@ -8,13 +8,13 @@ export default function SelectMapLayers() {
     const { mapLayers, setPickedMapLayer, mapLayerOpacity, setOpacity, pickedMapLayer } = useAppStore();
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setOpacity(Number(event.target.value)); // Convertir la valeur en nombre
+        setOpacity(Number(event.target.value));
     };
 
-    return <div className="bg-white/10 flex items-center justify-center p-1 rounded-full cursor-pointer">
+    return <div className="bg-white flex items-center justify-center p-1 w-8 h-8 rounded-full cursor-pointer">
         <Menu>
             <MenuButton>
-                <LiaGlobeEuropeSolid className="size-6 text-gray-100 hover:text-white" />
+                <LiaGlobeEuropeSolid className="size-6 text-gray-800 hover:text-gray-900" />
             </MenuButton>
             <MenuItems anchor="bottom end"
                 className="mt-1 w-60 origin-top-right rounded-xl border border-white/5 bg-black/50 p-1 text-sm/6 

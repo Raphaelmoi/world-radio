@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import CurrentRadioPlayer from "./components/CurrentRadioPlayer";
 import { FeatureCollection } from "./types/CapitalsGeojson";
 import SelectMapLayers from "./components/SelectMapLayers";
+import SelectFavoriteRadio from "./components/SelectFavoriteRadio";
+import useAppStore from "./stores/store";
 
 const Cesium = dynamic(
   () => import('./components/Cesium'),
@@ -17,7 +19,7 @@ export default function Home() {
   const [radios, setRadios] = useState<RadioStation[]>([])
   const [currentRadio, setCurrentRadio] = useState<RadioStation | null>(null)
   const [currentRadioIndex, setCurrentRadioIndex] = useState(0)
-  const [favoriteRadios, setFavoriteRadios] = useState<string[]>([])
+  const { favoriteRadios, setFavoriteRadios } = useAppStore();
 
   function pickNextRadio(direction: number) {
     let nextRadio = currentRadioIndex + direction;
@@ -84,7 +86,8 @@ export default function Home() {
           toggleFavoriteRadio={toggleFavoriteRadio}
         />
       }
-      <div className="absolute top-6 right-6">
+      <div className="absolute top-6 right-6 flex gap-2">
+        <SelectFavoriteRadio radios={radios} pickRadio={(pickedRadio: RadioStation) => setCurrentRadio(pickedRadio)} />
         <SelectMapLayers />
       </div>
     </main >
