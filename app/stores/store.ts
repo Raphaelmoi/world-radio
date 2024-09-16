@@ -12,6 +12,7 @@ interface AppState {
     radios: RadioStation[];
     currentRadio: null | RadioStation;
     favoriteRadios: string[];
+    isPlaying: boolean;
     mapLayerOpacity: number;
     mapLayers: MapLayer[];
     pickedMapLayer: MapLayer | null;
@@ -20,12 +21,14 @@ interface AppState {
     setRadios: (radios: RadioStation[]) => void
     setFavoriteRadios: (radios: string[]) => void
     setCurrentRadio: (radio: null | RadioStation) => void
+    setIsPlaying: (play: boolean) => void
 }
 
 const useAppStore = create<AppState>(set => ({
     radios: [],
     currentRadio: null,
     favoriteRadios: [],
+    isPlaying: false,
     mapLayerOpacity: 1,
     mapLayers: [
         { name: "OSM", url: "https://tile.openstreetmap.org/", img: "/map/osm.jpg" },
@@ -43,7 +46,8 @@ const useAppStore = create<AppState>(set => ({
     setOpacity: (opacity: number) => set(state => ({ mapLayerOpacity: opacity })),
     setFavoriteRadios: (radios: string[]) => set(state => ({ favoriteRadios: radios })),
     setRadios: (radios) => set(state => ({ radios })),
-    setCurrentRadio: (currentRadio) => set(state => ({ currentRadio })),
+    setCurrentRadio: (currentRadio) => set(state => ({ currentRadio, isPlaying: true })),
+    setIsPlaying: (isPlaying) => set(state => ({ isPlaying }))
 }));
 
 export default useAppStore;

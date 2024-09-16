@@ -12,8 +12,7 @@ interface CurrentRadioPlayerProps {
 }
 
 export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayerProps) {
-    const { favoriteRadios, currentRadio, setFavoriteRadios } = useAppStore();
-    const [isPlaying, setIsPlaying] = useState(true);
+    const { favoriteRadios, currentRadio, setFavoriteRadios, isPlaying, setIsPlaying } = useAppStore();
     const audioRef = useRef<HTMLAudioElement>(null);
 
     function toggleFavoriteRadio(radioId: string) {
