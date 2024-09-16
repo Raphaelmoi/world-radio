@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { FaMagnifyingGlass, FaPause, FaPlay, FaXmark } from "react-icons/fa6";
-import { HiOutlinePlusCircle, HiOutlineSpeakerWave } from "react-icons/hi2";
+import { HiOutlinePlusCircle } from "react-icons/hi2";
 import useAppStore from "../stores/store";
 import RadioSmallCard from "./RadioSmallCard";
+import { SpeakerVolume } from "./SpeakerVolume";
 
 export default function SearchRadio() {
     const { radios, currentRadio, isPlaying, setIsPlaying } = useAppStore();
@@ -33,6 +34,7 @@ export default function SearchRadio() {
     }, [searchRadiosResults, visibleRadiosQty]);
 
 
+
     return (
         <>
             <div
@@ -43,9 +45,9 @@ export default function SearchRadio() {
             </div>
 
             {isOpen &&
-                <div className="fixed w-full h-full top-0 left-0 backdrop-blur-sm bg-black/70 flex flex-col justify-center items-center">
+                <div className="fixed w-full h-full top-0 left-0 backdrop-blur-sm bg-black/90 flex flex-col justify-center items-center">
                     <FaXmark
-                        className="color-white absolute top-5 right-5 size-6 cursor-pointer"
+                        className="color-white absolute top-6 right-6 size-7 cursor-pointer"
                         onClick={togglePopup}
                     />
 
@@ -67,7 +69,7 @@ export default function SearchRadio() {
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4  max-h-[620px] overflow-auto pb-4 pr-4">
                                     {
-                                        searchRadiosResultsTruncate.map((radio) => <RadioSmallCard radio={radio} key={radio.stationuuid} />)
+                                        searchRadiosResultsTruncate.map((radio) => <RadioSmallCard radio={radio} key={'search-' + radio.stationuuid} />)
                                     }
                                     {
                                         searchRadiosResultsTruncate.length < searchRadiosResults.length &&
@@ -83,7 +85,7 @@ export default function SearchRadio() {
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4  max-h-[620px] overflow-auto pb-4 pr-4">
                                     {
-                                        popularRadios.map((radio) => <RadioSmallCard radio={radio} key={radio.stationuuid} />)
+                                        popularRadios.map((radio) => <RadioSmallCard radio={radio} key={'popular-' + radio.stationuuid} />)
                                     }
                                     {
                                         popularRadios.length < radios.length &&
@@ -96,8 +98,9 @@ export default function SearchRadio() {
                     </div>
 
                     {currentRadio && <div className="absolute bottom-5 right-5 flex items-center gap-2">
-                        <HiOutlineSpeakerWave className="size-5" />
-                        <span className="max-w-xl truncate">
+                        <SpeakerVolume />
+
+                        <span className="max-w-xl truncate ml-2">
                             {currentRadio.name}
                         </span>
 

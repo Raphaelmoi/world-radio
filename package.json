@@ -13,6 +13,7 @@
     "@headlessui/react": "^2.1.8",
     "cesium": "^1.120.0",
     "next": "14.2.7",
+    "rc-slider": "^11.1.5",
     "react": "^18",
     "react-dom": "^18",
     "react-globe.gl": "^2.27.2",

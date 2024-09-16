@@ -6,13 +6,14 @@ import { GoHeart, GoHeartFill } from "react-icons/go";
 import { HiOutlineChevronLeft, HiOutlineChevronRight } from "react-icons/hi2";
 import useAppStore from "../stores/store";
 import { LS_FAVORITE_RADIOS_NAME } from "../utils/const";
+import { SpeakerVolume } from "./SpeakerVolume";
 
 interface CurrentRadioPlayerProps {
     pickNextRadio: (direction: number) => void;
 }
 
 export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayerProps) {
-    const { favoriteRadios, currentRadio, setFavoriteRadios, isPlaying, setIsPlaying } = useAppStore();
+    const { favoriteRadios, currentRadio, setFavoriteRadios, isPlaying, setIsPlaying, volume } = useAppStore();
     const audioRef = useRef<HTMLAudioElement>(null);
 
     function toggleFavoriteRadio(radioId: string) {
@@ -26,6 +27,7 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
         setFavoriteRadios(favArray)
     }
 
+    // Play / Pause
     useEffect(() => {
         if (isPlaying) {
             audioRef.current?.play();
@@ -33,6 +35,14 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
             audioRef.current?.pause();
         }
     }, [isPlaying]);
+
+    // Volume of the sound
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = volume / 100;
+        }
+    }, [volume]);
+
 
     const togglePlayPause = () => {
         setIsPlaying(!isPlaying);
@@ -88,12 +98,17 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
                         </div>
 
                         <div
-                            className="mr-20 opacity-70 hover:opacity-100 transition-opacity duration-300"
+                            className="mr-10 opacity-70 hover:opacity-100 transition-opacity duration-300"
                             onClick={() => pickNextRadio(1)}>
                             <HiOutlineChevronRight className="size-12 cursor-pointer" />
                         </div>
-                        <audio ref={audioRef} src={currentRadio.url_resolved.replace('http://', 'https://')} autoPlay className="hidden"></audio>
+
+                        <div className="mr-10">
+                            <SpeakerVolume iconSize="size-8" />
+                        </div>
+
                     </div>
+                    <audio ref={audioRef} src={currentRadio.url_resolved.replace('http://', 'https://')} autoPlay className="hidden"></audio>
                 </>
             }
 
