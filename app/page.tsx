@@ -7,19 +7,17 @@ import { FeatureCollection } from "./types/CapitalsGeojson";
 import SelectMapLayers from "./components/SelectMapLayers";
 import SelectFavoriteRadio from "./components/SelectFavoriteRadio";
 import useAppStore from "./stores/store";
+import SearchRadio from "./components/SearchRadio";
+import { LS_FAVORITE_RADIOS_NAME } from "./utils/const";
 
 const Cesium = dynamic(
   () => import('./components/Cesium'),
   { ssr: false }
 )
 
-const LS_FAVORITE_RADIOS_NAME = 'favorites-radio'
-
 export default function Home() {
-  const [radios, setRadios] = useState<RadioStation[]>([])
-  const [currentRadio, setCurrentRadio] = useState<RadioStation | null>(null)
+  const { setFavoriteRadios, radios, setRadios, currentRadio, setCurrentRadio } = useAppStore();
   const [currentRadioIndex, setCurrentRadioIndex] = useState(0)
-  const { favoriteRadios, setFavoriteRadios } = useAppStore();
 
   function pickNextRadio(direction: number) {
     let nextRadio = currentRadioIndex + direction;
@@ -28,17 +26,6 @@ export default function Home() {
 
     setCurrentRadioIndex(nextRadio);
     setCurrentRadio(radios[nextRadio]);
-  }
-
-  function toggleFavoriteRadio(radioId: string) {
-    let favArray = favoriteRadios
-    if (favArray.includes(radioId)) {
-      favArray = favArray.filter(radio => radio !== radioId)
-    } else {
-      favArray = [...favArray, radioId]
-    }
-    localStorage.setItem(LS_FAVORITE_RADIOS_NAME, JSON.stringify(favArray))
-    setFavoriteRadios(favArray)
   }
 
   useEffect(() => {
@@ -76,18 +63,13 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between relative">
 
-      <Cesium radios={radios} pickRadio={(pickedRadio: RadioStation) => setCurrentRadio(pickedRadio)} pickedRadio={currentRadio} />
+      <Cesium />
 
-      {currentRadio &&
-        <CurrentRadioPlayer
-          currentRadio={currentRadio}
-          pickNextRadio={pickNextRadio}
-          favoriteRadios={favoriteRadios}
-          toggleFavoriteRadio={toggleFavoriteRadio}
-        />
-      }
+      {currentRadio && <CurrentRadioPlayer pickNextRadio={pickNextRadio} />}
+
       <div className="absolute top-6 right-6 flex gap-2">
-        <SelectFavoriteRadio radios={radios} pickRadio={(pickedRadio: RadioStation) => setCurrentRadio(pickedRadio)} />
+        <SearchRadio />
+        <SelectFavoriteRadio />
         <SelectMapLayers />
       </div>
     </main >

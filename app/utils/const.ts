@@ -1,0 +1,1 @@
+export const LS_FAVORITE_RADIOS_NAME = 'favorites-radio'

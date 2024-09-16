@@ -1,14 +1,11 @@
 import { Menu, MenuButton, MenuItems, MenuItem, MenuSeparator, MenuHeading } from "@headlessui/react";
 import { GoHeartFill } from "react-icons/go";
 import useAppStore from "../stores/store";
-import { RadioStation } from "../types/radio-station";
 
-interface SelectFavoriteRadioProps {
-    radios: RadioStation[];
-    pickRadio: (radio: RadioStation) => void
-}
-export default function SelectFavoriteRadio({ radios, pickRadio }: SelectFavoriteRadioProps) {
-    const { favoriteRadios } = useAppStore();
+interface SelectFavoriteRadioProps { }
+
+export default function SelectFavoriteRadio({ }: SelectFavoriteRadioProps) {
+    const { favoriteRadios, radios, setCurrentRadio } = useAppStore();
 
     function getRadio(radioUuid: string) {
         const r = radios.find(r => r.stationuuid === radioUuid)
@@ -39,7 +36,7 @@ export default function SelectFavoriteRadio({ radios, pickRadio }: SelectFavorit
                     {favoriteRadios.map(radio =>
                         <MenuItem key="radio">
                             <button
-                                onClick={() => pickRadio(getRadio(radio)!)}
+                                onClick={() => setCurrentRadio(getRadio(radio)!)}
                                 className="group flex w-full items-center gap-2 rounded-lg py-1 px-3 data-[focus]:bg-white/10 truncate">
                                 {getRadio(radio)?.name}
                             </button>

@@ -1,27 +1,22 @@
 import { Color, EntityCluster, OpenStreetMapImageryProvider } from 'cesium';
 import { CameraFlyTo, CustomDataSource, Entity, GeoJsonDataSource, ImageryLayer, Viewer } from 'resium'
 import { Cartesian3 } from "cesium";
-import { RadioStation } from '../types/radio-station';
 import { useEffect, useState } from 'react';
 import useAppStore from '../stores/store';
 
-interface GlobeComponentProps {
-    radios: RadioStation[];
-    pickedRadio: RadioStation | null;
-    pickRadio: (radio: RadioStation) => void
-}
+interface GlobeComponentProps { }
 
 const electricBlue = "#2c75ff";
 
-export default function Cesium({ radios, pickedRadio, pickRadio }: GlobeComponentProps) {
+export default function Cesium({ }: GlobeComponentProps) {
     const [radioEntities, setRadioEntities] = useState<JSX.Element[]>([]);
     const [pickedRadioEntities, setPickedRadioEntities] = useState<JSX.Element>();
-    const { mapLayerOpacity, pickedMapLayer } = useAppStore();
+    const { mapLayerOpacity, pickedMapLayer, radios, currentRadio, setCurrentRadio } = useAppStore();
 
     function pickRadioStation(stationId: string) {
         const r = radios.findIndex((radio) => radio.stationuuid === stationId)
         if (r !== -1) {
-            pickRadio(radios[r])
+            setCurrentRadio(radios[r])
         }
     }
 
@@ -51,8 +46,8 @@ export default function Cesium({ radios, pickedRadio, pickRadio }: GlobeComponen
 
 
     useEffect(() => {
-        if (pickedRadio) {
-            const position = Cartesian3.fromDegrees(pickedRadio.geo_long!, pickedRadio.geo_lat!, 8);
+        if (currentRadio) {
+            const position = Cartesian3.fromDegrees(currentRadio.geo_long!, currentRadio.geo_lat!, 8);
 
             setPickedRadioEntities(
                 <Entity
@@ -65,7 +60,7 @@ export default function Cesium({ radios, pickedRadio, pickRadio }: GlobeComponen
                 />)
 
         }
-    }, [pickedRadio])
+    }, [currentRadio])
 
     return (
         <Viewer full
@@ -100,10 +95,10 @@ export default function Cesium({ radios, pickedRadio, pickRadio }: GlobeComponen
                 stroke={Color.WHITE}
             />
 
-            {pickedRadio ?
+            {currentRadio ?
                 <CameraFlyTo
                     duration={5}
-                    destination={Cartesian3.fromDegrees(pickedRadio?.geo_long || 0, pickedRadio?.geo_lat || 0, 1_000_000)}
+                    destination={Cartesian3.fromDegrees(currentRadio?.geo_long || 0, currentRadio?.geo_lat || 0, 1_000_000)}
                 /> :
                 <CameraFlyTo
                     duration={5}

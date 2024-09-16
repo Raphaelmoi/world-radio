@@ -1,5 +1,6 @@
 // stores/store.ts
 import { create } from 'zustand';
+import { RadioStation } from '../types/radio-station';
 
 interface MapLayer {
     name: string;
@@ -8,16 +9,22 @@ interface MapLayer {
 }
 
 interface AppState {
+    radios: RadioStation[];
+    currentRadio: null | RadioStation;
     favoriteRadios: string[];
     mapLayerOpacity: number;
     mapLayers: MapLayer[];
     pickedMapLayer: MapLayer | null;
     setPickedMapLayer: (picked: MapLayer | null) => void;
     setOpacity: (opacity: number) => void
+    setRadios: (radios: RadioStation[]) => void
     setFavoriteRadios: (radios: string[]) => void
+    setCurrentRadio: (radio: null | RadioStation) => void
 }
 
 const useAppStore = create<AppState>(set => ({
+    radios: [],
+    currentRadio: null,
     favoriteRadios: [],
     mapLayerOpacity: 1,
     mapLayers: [
@@ -34,7 +41,9 @@ const useAppStore = create<AppState>(set => ({
 
     setPickedMapLayer: (picked: MapLayer | null) => set(state => ({ pickedMapLayer: picked })),
     setOpacity: (opacity: number) => set(state => ({ mapLayerOpacity: opacity })),
-    setFavoriteRadios: (radios: string[]) => set(state => ({ favoriteRadios: radios }))
+    setFavoriteRadios: (radios: string[]) => set(state => ({ favoriteRadios: radios })),
+    setRadios: (radios) => set(state => ({ radios })),
+    setCurrentRadio: (currentRadio) => set(state => ({ currentRadio })),
 }));
 
 export default useAppStore;
