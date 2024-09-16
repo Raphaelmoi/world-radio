@@ -1,5 +1,5 @@
-import { Color, EntityCluster, OpenStreetMapImageryProvider } from 'cesium';
-import { CameraFlyTo, CustomDataSource, Entity, GeoJsonDataSource, ImageryLayer, Viewer } from 'resium'
+import { Color, DistanceDisplayCondition, EntityCluster, OpenStreetMapImageryProvider } from 'cesium';
+import { BillboardGraphics, CameraFlyTo, CustomDataSource, Entity, GeoJsonDataSource, ImageryLayer, Viewer } from 'resium'
 import { Cartesian3 } from "cesium";
 import { useEffect, useState } from 'react';
 import useAppStore from '../stores/store';
@@ -53,11 +53,18 @@ export default function Cesium({ }: GlobeComponentProps) {
                 <Entity
                     position={position}
                     point={{
-                        pixelSize: 12,
-                        color: Color.ORANGERED,
+                        pixelSize: 8,
+                        color: Color.BLACK,
                         outlineWidth: 0
                     }}
-                />)
+                >
+                    <BillboardGraphics
+                        image={"/pin.png"}
+                        width={64}
+                        height={64}
+                        distanceDisplayCondition={new DistanceDisplayCondition(0, 50_000_000)}
+                    />
+                </Entity>)
 
         }
     }, [currentRadio])
@@ -91,8 +98,9 @@ export default function Cesium({ }: GlobeComponentProps) {
             /> */}
             {/* <Scene /> */}
             <GeoJsonDataSource
-                data={"/ne_110m_admin_0_countries.geojson"}
+                data={"/custom.geo.json"}
                 stroke={Color.WHITE}
+                fill={Color.TRANSPARENT}
             />
 
             {currentRadio ?
