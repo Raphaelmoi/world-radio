@@ -7,6 +7,7 @@ import { HiOutlineChevronLeft, HiOutlineChevronRight } from "react-icons/hi2";
 import useAppStore from "../stores/store";
 import { LS_FAVORITE_RADIOS_NAME } from "../utils/const";
 import { SpeakerVolume } from "./SpeakerVolume";
+import SoundVisualizer from "./SoundVizualizer";
 
 interface CurrentRadioPlayerProps {
     pickNextRadio: (direction: number) => void;
@@ -53,7 +54,7 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
     };
 
     return (
-        <div className="backdrop-blur-sm bg-slate-800/90 w-9/12 absolute bottom-4 p-4 rounded-md flex ">
+        <div className="backdrop-blur-sm bg-slate-800/90 w-9/12 absolute bottom-4 p-4 rounded-md flex">
             {currentRadio &&
                 <>
                     <img
@@ -65,7 +66,7 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
                     <div className="flex items-center w-full">
                         <div className="mr-4 flex-1">
                             <a
-                                className="flex items-center group"
+                                className="flex items-center group select-none"
                                 href={currentRadio.homepage}
                                 target="_blank"
                                 rel="noopener"
@@ -76,7 +77,7 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
                                 <TbExternalLink className="ml-2 opacity-0 group-hover:opacity-50 transition-opacity duration-200" />
                             </a>
 
-                            <span className="block text-gray-400">
+                            <span className="block text-gray-400 select-none">
                                 {currentRadio.country}
                             </span>
                             {currentRadio.tags && (
@@ -85,6 +86,7 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
                                 </div>
                             )}
                         </div>
+                        {audioRef && <SoundVisualizer audioElement={audioRef.current}></SoundVisualizer>}
 
                         <div
                             className="opacity-70 hover:opacity-100 transition-opacity duration-300"
@@ -108,7 +110,13 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
                         </div>
 
                     </div>
-                    <audio ref={audioRef} src={currentRadio.url_resolved.replace('http://', 'https://')} autoPlay className="hidden"></audio>
+
+                    {currentRadio && <audio
+                        ref={audioRef}
+                        src={currentRadio.url_resolved.replace('http://', 'https://')}
+                        autoPlay
+                        className="hidden"
+                        crossOrigin="anonymous"></audio>}
                 </>
             }
 
