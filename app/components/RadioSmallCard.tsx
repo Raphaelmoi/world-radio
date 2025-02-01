@@ -12,8 +12,8 @@ export default function RadioSmallCard({ radio }: RadioSmallCardProps) {
 
     return <div
         onClick={() => setCurrentRadio(radio)}
-        className="p-3 bg-slate-100/20 backdrop-blur-sm rounded-md cursor-pointer
-               hover:bg-slate-100/30 transition">
+        className="p-3 bg-slate-600/20 backdrop-blur-sm rounded-md cursor-pointer
+               hover:bg-slate-600/30 transition">
         <div className="flex overflow-hidden items-center">
             <img
                 src={radio.favicon !== '' ? radio.favicon : '/radio.webp'}

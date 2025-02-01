@@ -54,7 +54,7 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
     };
 
     return (
-        <div className="backdrop-blur-sm bg-slate-800/90 w-9/12 absolute bottom-4 p-4 rounded-md flex">
+        <div className="backdrop-blur-sm bg-gray-950/90 w-9/12 absolute bottom-4 p-4 rounded-md flex ">
             {currentRadio &&
                 <>
                     <img
@@ -89,18 +89,18 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
                         {audioRef && <SoundVisualizer audioElement={audioRef.current}></SoundVisualizer>}
 
                         <div
-                            className="opacity-70 hover:opacity-100 transition-opacity duration-300"
+                            className="opacity-70 hover:opacity-100 transition-opacity duration-300 themecolorHover"
                             onClick={() => pickNextRadio(-1)}>
                             <HiOutlineChevronLeft className="size-12 cursor-pointer" />
                         </div>
 
-                        <div onClick={togglePlayPause} className="opacity-70 hover:opacity-100 transition duration-500 mx-16 cursor-pointer hover:scale-110"
+                        <div onClick={togglePlayPause} className="opacity-70 hover:opacity-100 transition duration-500 mx-16 cursor-pointer hover:scale-110 themecolorHover"
                         >
                             {isPlaying ? <FaPause className="size-8" /> : <FaPlay className="size-8" />}
                         </div>
 
                         <div
-                            className="mr-10 opacity-70 hover:opacity-100 transition-opacity duration-300"
+                            className="mr-10 opacity-70 hover:opacity-100 transition-opacity duration-300 themecolorHover"
                             onClick={() => pickNextRadio(1)}>
                             <HiOutlineChevronRight className="size-12 cursor-pointer" />
                         </div>

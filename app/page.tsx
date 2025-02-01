@@ -16,7 +16,7 @@ const Cesium = dynamic(
 )
 
 export default function Home() {
-  const { setFavoriteRadios, radios, setRadios, currentRadio, setCurrentRadio } = useAppStore();
+  const { setFavoriteRadios, radios, setRadios, currentRadio, setCurrentRadio, themes, setCurrentTheme, setNewRadioKey } = useAppStore();
   const [currentRadioIndex, setCurrentRadioIndex] = useState(0)
 
   function pickNextRadio(direction: number) {
@@ -26,9 +26,14 @@ export default function Home() {
 
     setCurrentRadioIndex(nextRadio);
     setCurrentRadio(radios[nextRadio]);
+
+    setNewRadioKey()
   }
 
   useEffect(() => {
+    setCurrentTheme(themes[0])
+    document.documentElement.style.setProperty('--theme-color', themes[0].color);
+
     const storedFavorites = localStorage.getItem(LS_FAVORITE_RADIOS_NAME);
     if (storedFavorites) {
       setFavoriteRadios(JSON.parse(storedFavorites));
@@ -59,9 +64,23 @@ export default function Home() {
     fetchData();
   }, []);
 
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-between relative">
+      {/* 
+      rajouter : 
+      - shazam ?
+      - animation wave du son
+      - loading d'une radio ?
+      - recherche par type / pays
+      - ne pas dezoomer quand une on clique sur une radio
+      - responsive
+      - bouton voir details ?
+      - recuperation du bon endpoint pour la liste des radios
+      
+      
+      - le géojson
+      - afficher une icone drapeau plutot qu'un point rouge sur le globe pour la radio jouée
+      */}
 
       <Cesium />
 
@@ -70,8 +89,10 @@ export default function Home() {
       <div className="absolute top-6 right-6 flex gap-2">
         <SearchRadio />
         <SelectFavoriteRadio />
-        <SelectMapLayers />
+        {/* <SelectMapLayers /> */}
       </div>
+
+
     </main >
   );
 }

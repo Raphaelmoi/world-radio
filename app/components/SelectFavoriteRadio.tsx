@@ -17,12 +17,12 @@ export default function SelectFavoriteRadio({ }: SelectFavoriteRadioProps) {
         {favoriteRadios.length &&
             <Menu>
                 <MenuButton>
-                    <GoHeartFill className="size-5 text-gray-800 hover:text-gray-900" />
+                    <GoHeartFill className="size-5 text-red-600 hover:text-red-700" />
                 </MenuButton>
 
                 <MenuItems anchor="bottom end"
                     className="mt-2 w-60 origin-top-right rounded-xl 
-                        border border-white/5 bg-black/50 p-1 text-sm/6 
+                        border border-white/5 bg-black/70 p-1 text-sm/6 
                         text-white transition duration-100 ease-out 
                         [--anchor-gap:var(--spacing-1)] focus:outline-none 
                         data-[closed]:scale-95 data-[closed]:opacity-0"
