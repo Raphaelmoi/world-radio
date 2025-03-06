@@ -63,7 +63,7 @@ export default function SearchRadio() {
                         {searchResultInputValue.length ?
                             <>
                                 <h3 className="pb-2 my-8  border-b flex">
-                                    Search results for "{searchResultInputValue}"
+                                    Search results for {searchResultInputValue}
                                     <span className="ml-auto">{searchRadiosResults.length} result{searchRadiosResults.length > 1 && 's'}</span>
                                 </h3>
 
