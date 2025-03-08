@@ -9,7 +9,7 @@ import SelectFavoriteRadio from "./components/SelectFavoriteRadio";
 import useAppStore from "./stores/store";
 import SearchRadio from "./components/SearchRadio";
 import { LS_FAVORITE_RADIOS_NAME } from "./utils/const";
-import { get_radiobrowser_base_url_random , get_radiobrowser_server_config} from "./utils/api-radio-browser";
+import { get_radiobrowser_base_url_random } from "./utils/api-radio-browser";
 import {  FaPlay } from "react-icons/fa";
 
 const Cesium = dynamic(
@@ -44,8 +44,12 @@ export default function Home() {
 
 
     const fetchData = async () => {
-      const apiLink : string = await get_radiobrowser_base_url_random()
-
+      let apiLink : string = "https://nl1.api.radio-browser.info";
+      // try {
+      //   apiLink = await get_radiobrowser_base_url_random()
+      // } catch (error) {
+      //   console.log("Error getting random radio-browser server", error);
+      // }
       const fetchedRadios: RadioStation[] = await fetch(apiLink + '/json/stations/search')
         .then(res => res.json());
 
