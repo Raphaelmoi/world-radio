@@ -1,7 +1,7 @@
 import pkg from 'webpack';
 const { DefinePlugin } = pkg;
 
-// export const reactStrictMode = true;
+export const reactStrictMode = true;
 export function webpack(config) {
     config.plugins.push(
         new DefinePlugin({

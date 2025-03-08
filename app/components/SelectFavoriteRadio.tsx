@@ -13,8 +13,8 @@ export default function SelectFavoriteRadio({ }: SelectFavoriteRadioProps) {
         return null
     }
 
-    return <div className="bg-white flex items-center justify-center p-1 w-8 h-8 rounded-full cursor-pointer">
-        {favoriteRadios.length &&
+    return favoriteRadios.length ?
+        <div className="bg-white flex items-center justify-center p-1 w-8 h-8 rounded-full cursor-pointer">
             <Menu>
                 <MenuButton>
                     <GoHeartFill className="size-5 text-red-600 hover:text-red-700" />
@@ -44,6 +44,5 @@ export default function SelectFavoriteRadio({ }: SelectFavoriteRadioProps) {
                     )}
                 </MenuItems>
             </Menu>
-        }
-    </div>
+        </div> : <div></div>
 }
