@@ -49,7 +49,7 @@ export default function Cesium({ }: GlobeComponentProps) {
         if (radios.length) {
             const entities: JSX.Element[] = radios.filter(r => r.hls !== 3 && r.geo_lat && r.geo_long)
                 .map((r) => {
-                    const position = Cartesian3.fromDegrees(r.geo_long!, r.geo_lat!, 10_000);
+                    const position = Cartesian3.fromDegrees(r.geo_long!, r.geo_lat!, 3);
                     const pointGraphics = {
                         pixelSize: 6,
                         color: Color.fromCssColorString(currentTheme.color),
@@ -73,7 +73,7 @@ export default function Cesium({ }: GlobeComponentProps) {
 
     useEffect(() => {
         if (currentRadio && currentRadio.geo_long && currentRadio.geo_lat) {
-            const position = Cartesian3.fromDegrees(currentRadio.geo_long!, currentRadio.geo_lat!, 10_001);
+            const position = Cartesian3.fromDegrees(currentRadio.geo_long!, currentRadio.geo_lat!, 5);
 
             setPickedRadioEntities(
                 <Entity
@@ -128,14 +128,14 @@ export default function Cesium({ }: GlobeComponentProps) {
 
             {currentTheme.id === 1 &&
                 <>
-                    <Globe
+                    {/* <Globe
                         baseColor={Color.DARKMAGENTA}
-                    />
+                    /> */}
 
                     <GeoJsonDataSource
                         data={"/custom.geo.json"}
                         stroke={Color.WHITE}
-                        fill={Color.fromCssColorString('#030303')}
+                        fill={Color.TRANSPARENT}
                     />
 
                     {/* <ImageryLayer

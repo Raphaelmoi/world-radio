@@ -53,6 +53,28 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
         if (currentRadio) toggleFavoriteRadio(currentRadio.stationuuid)
     };
 
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+        
+        console.log(currentRadio?.name, currentRadio);
+    
+        const handleError = () => {
+            if (audio.error) {
+                console.error("Error playing the radio :", audio.error);
+                pickNextRadio(1)
+            }
+        };
+    
+        audio.removeEventListener("error", handleError);
+        audio.addEventListener("error", handleError);
+    
+        return () => {
+            audio.removeEventListener("error", handleError);
+        };
+    }, [currentRadio]);
+    
     return (
         <div className="backdrop-blur-sm bg-gray-950/90 w-9/12 absolute bottom-4 p-4 rounded-md flex ">
             {currentRadio &&
@@ -67,7 +89,7 @@ export default function CurrentRadioPlayer({ pickNextRadio }: CurrentRadioPlayer
                         <div className="mr-4 flex-1">
                             <a
                                 className="flex items-center group select-none"
-                                href={currentRadio.homepage}
+                                href={currentRadio.homepage || currentRadio.url}
                                 target="_blank"
                                 rel="noopener"
                             >

@@ -9,6 +9,8 @@ import SelectFavoriteRadio from "./components/SelectFavoriteRadio";
 import useAppStore from "./stores/store";
 import SearchRadio from "./components/SearchRadio";
 import { LS_FAVORITE_RADIOS_NAME } from "./utils/const";
+import { get_radiobrowser_base_url_random , get_radiobrowser_server_config} from "./utils/api-radio-browser";
+import {  FaPlay } from "react-icons/fa";
 
 const Cesium = dynamic(
   () => import('./components/Cesium'),
@@ -18,6 +20,7 @@ const Cesium = dynamic(
 export default function Home() {
   const { setFavoriteRadios, radios, setRadios, currentRadio, setCurrentRadio, themes, setCurrentTheme, setNewRadioKey } = useAppStore();
   const [currentRadioIndex, setCurrentRadioIndex] = useState(0)
+  const [ showWelcomePanel, setShowWelcomePanel ] = useState(true)
 
   function pickNextRadio(direction: number) {
     let nextRadio = currentRadioIndex + direction;
@@ -39,8 +42,11 @@ export default function Home() {
       setFavoriteRadios(JSON.parse(storedFavorites));
     }
 
+
     const fetchData = async () => {
-      const fetchedRadios: RadioStation[] = await fetch('https://at1.api.radio-browser.info/json/stations/search')
+      const apiLink : string = await get_radiobrowser_base_url_random()
+
+      const fetchedRadios: RadioStation[] = await fetch(apiLink + '/json/stations/search')
         .then(res => res.json());
 
       const capitals: FeatureCollection = await fetch("/capitals.geojson").then(res => res.json());
@@ -58,11 +64,15 @@ export default function Home() {
 
       const shuffledRadios = fetchedRadios.sort(() => Math.random() - 0.5);
       setRadios(shuffledRadios);
-      setCurrentRadio(shuffledRadios[0]);
     };
 
     fetchData();
   }, []);
+
+function runRadio() {
+  setShowWelcomePanel(false)
+  pickNextRadio(1)
+}
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between relative">
@@ -72,15 +82,22 @@ export default function Home() {
       - animation wave du son
       - loading d'une radio ?
       - recherche par type / pays
-      - ne pas dezoomer quand une on clique sur une radio
       - responsive
       - bouton voir details ?
       - recuperation du bon endpoint pour la liste des radios
-      
-      
-      - le géojson
-      - afficher une icone drapeau plutot qu'un point rouge sur le globe pour la radio jouée
       */}
+
+      { showWelcomePanel && <div className="fixed inset-0 flex items-center justify-center z-40 bg-gray-950/60">
+        <div className="rounded-xl py-8 px-16 backdrop-blur-sm bg-gray-950/90">
+          <h1 className="text-4xl font-bold text-white">Radio Monde</h1>
+          
+            <div className="mt-4 flex items-center gap-2 rounded-full bg-yellow-500 px-4 py-2 cursor-pointer" onClick={() => runRadio()}>
+              <FaPlay className="size-8" />
+              <span>Let's start !</span>
+            </div>
+        </div>
+      </div>
+      }
 
       <Cesium />
 
