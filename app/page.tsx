@@ -9,7 +9,6 @@ import SelectFavoriteRadio from "./components/SelectFavoriteRadio";
 import useAppStore from "./stores/store";
 import SearchRadio from "./components/SearchRadio";
 import { LS_FAVORITE_RADIOS_NAME } from "./utils/const";
-import { get_radiobrowser_base_url_random } from "./utils/api-radio-browser";
 import {  FaPlay } from "react-icons/fa";
 
 const Cesium = dynamic(
@@ -68,6 +67,10 @@ export default function Home() {
 
       const shuffledRadios = fetchedRadios.sort(() => Math.random() - 0.5);
       setRadios(shuffledRadios);
+
+      if(!currentRadio) {
+        setCurrentRadio(shuffledRadios[0]);
+      }
     };
 
     fetchData();
