@@ -93,7 +93,7 @@ function runRadio() {
           
             <div className="mt-4 flex items-center gap-2 rounded-full bg-yellow-500 px-4 py-2 cursor-pointer" onClick={() => runRadio()}>
               <FaPlay className="size-8" />
-              <span>Let's start !</span>
+              <span>Let&apos;s start !</span>
             </div>
         </div>
       </div>

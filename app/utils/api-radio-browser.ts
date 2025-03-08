@@ -15,7 +15,7 @@ export function get_radiobrowser_base_urls() {
         request.open('GET', 'http://all.api.radio-browser.info/json/servers', true);
         request.onload = function() {
             if (request.status >= 200 && request.status < 300){
-                var items = JSON.parse(request.responseText).map(x=>"https://" + x.name);
+                var items = JSON.parse(request.responseText).map((x: { name:string})=>"https://" + x.name);
                 resolve(items);
             }else{
                 reject(request.statusText);
@@ -49,7 +49,7 @@ export function get_radiobrowser_server_config(baseurl : string) {
  * Returns: string - base url for radio-browser api
  */
 export function get_radiobrowser_base_url_random() {
-    return get_radiobrowser_base_urls().then(hosts => {
+    return get_radiobrowser_base_urls().then((hosts : any) => {
         var item = hosts[Math.floor(Math.random() * hosts.length)];
         return item;
     });
