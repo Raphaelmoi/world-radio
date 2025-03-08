@@ -12,7 +12,7 @@ export function get_radiobrowser_base_urls() {
     return new Promise((resolve, reject)=>{
         var request = new XMLHttpRequest()
         // If you need https, you have to use fixed servers, at best a list for this request
-        request.open('GET', 'http://all.api.radio-browser.info/json/servers', true);
+        request.open('GET', 'https://all.api.radio-browser.info/json/servers', true);
         request.onload = function() {
             if (request.status >= 200 && request.status < 300){
                 var items = JSON.parse(request.responseText).map((x: { name:string})=>"https://" + x.name);
