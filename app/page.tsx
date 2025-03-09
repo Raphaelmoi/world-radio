@@ -10,6 +10,7 @@ import useAppStore from "./stores/store";
 import SearchRadio from "./components/SearchRadio";
 import { LS_FAVORITE_RADIOS_NAME } from "./utils/const";
 import {  FaPlay } from "react-icons/fa";
+import { RiLoader4Fill } from "react-icons/ri";
 
 const Cesium = dynamic(
   () => import('./components/Cesium'),
@@ -17,9 +18,10 @@ const Cesium = dynamic(
 )
 
 export default function Home() {
-  const { setFavoriteRadios, radios, setRadios, currentRadio, setCurrentRadio, themes, setCurrentTheme, setNewRadioKey } = useAppStore();
+  const { setFavoriteRadios, radios, setRadios, currentRadio, setCurrentRadio, themes, setCurrentTheme, setNewRadioKey, setCapitals } = useAppStore();
   const [currentRadioIndex, setCurrentRadioIndex] = useState(0)
   const [ showWelcomePanel, setShowWelcomePanel ] = useState(true)
+  const [ isFetching, setIsFetching ] = useState(true)
 
   function pickNextRadio(direction: number) {
     let nextRadio = currentRadioIndex + direction;
@@ -43,34 +45,28 @@ export default function Home() {
 
 
     const fetchData = async () => {
+      setIsFetching(true)
+
       let apiLink : string = "https://nl1.api.radio-browser.info";
       // try {
       //   apiLink = await get_radiobrowser_base_url_random()
       // } catch (error) {
       //   console.log("Error getting random radio-browser server", error);
       // }
-      const fetchedRadios: RadioStation[] = await fetch(apiLink + '/json/stations/search')
+      const fetchedRadios: RadioStation[] = await fetch(apiLink + '/json/stations')
         .then(res => res.json());
 
+
       const capitals: FeatureCollection = await fetch("/capitals.geojson").then(res => res.json());
+      setCapitals(capitals);
 
-      fetchedRadios
-        .filter(r => r.country && !r.geo_lat)
-        .forEach(radio => {
-          const capital = capitals.features.find(cap => radio.countrycode === cap.id);
-          if (capital) {
-            radio.geo_lat = capital.geometry.coordinates[1];
-            radio.geo_long = capital.geometry.coordinates[0];
-            radio.hls = 3; // Filter these out on the map
-          }
-        });
-
-      const shuffledRadios = fetchedRadios.sort(() => Math.random() - 0.5);
+      const shuffledRadios = fetchedRadios.sort(() => Math.random() - 0.5).filter((r: RadioStation) => r.hls === 0 );
       setRadios(shuffledRadios);
 
-      if(!currentRadio) {
-        setCurrentRadio(shuffledRadios[0]);
-      }
+      // if(!currentRadio) {
+      //   setCurrentRadio(shuffledRadios[0]);
+      // }
+      setIsFetching(false)
     };
 
     fetchData();
@@ -95,13 +91,20 @@ function runRadio() {
       */}
 
       { showWelcomePanel && <div className="fixed inset-0 flex items-center justify-center z-40 bg-gray-950/60">
-        <div className="rounded-xl py-8 px-16 backdrop-blur-sm bg-gray-950/90">
+        <div className="rounded-xl p-16 backdrop-blur-sm bg-gray-950/90 text-center">
           <h1 className="text-4xl font-bold text-white">Radio Monde</h1>
-          
-            <div className="mt-4 flex items-center gap-2 rounded-full bg-yellow-500 px-4 py-2 cursor-pointer" onClick={() => runRadio()}>
-              <FaPlay className="size-8" />
-              <span>Let&apos;s start !</span>
+            {radios.length > 0 && <p className="my-12">Listen up to {radios.length } radios</p> }
+            { isFetching ? 
+            <div className="mt-4 flex items-center gap-2 rounded-full bg-slate-500 px-4 py-2 cursor-pointer" onClick={() => runRadio()}>
+              <RiLoader4Fill  className="size-8 animate-spin" />
+              <span>Loading data</span>
             </div>
+            :
+            <div className="mt-4 flex items-center gap-2 rounded-full bg-yellow-500 px-4 py-2 cursor-pointer transition duration-500 hover:bg-yellow-600" onClick={() => runRadio()}>
+              <FaPlay className="size-6" />
+              <span>Let&apos;s go !</span>
+            </div>
+            }
         </div>
       </div>
       }

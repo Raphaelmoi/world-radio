@@ -1,6 +1,7 @@
 // stores/store.ts
 import { create } from 'zustand';
 import { RadioStation } from '../types/radio-station';
+import { FeatureCollection } from '../types/CapitalsGeojson';
 
 interface MapLayer {
     name: string;
@@ -17,6 +18,7 @@ interface Theme {
 
 interface AppState {
     radios: RadioStation[];
+    capitals: FeatureCollection | null;
     currentRadio: null | RadioStation;
     favoriteRadios: string[];
     isPlaying: boolean;
@@ -37,11 +39,13 @@ interface AppState {
     setVolume: (volume: number) => void;
     setCurrentTheme: (theme: Theme) => void;
     setNewRadioKey: () => void
+    setCapitals: (capitals: FeatureCollection) => void
 }
 
 const useAppStore = create<AppState>(set => ({
     radios: [],
     currentRadio: null,
+    capitals: null,
     favoriteRadios: [],
     isPlaying: false,
     mapLayerOpacity: 1,
@@ -67,8 +71,8 @@ const useAppStore = create<AppState>(set => ({
     setCurrentRadio: (currentRadio) => set(state => ({ currentRadio, isPlaying: true })),
     setIsPlaying: (isPlaying) => set(state => ({ isPlaying })),
     setVolume: (volume: number) => set(state => ({ volume })),
-
-
+    setCapitals: (capitals : FeatureCollection) => set(state => ({capitals})),
+ 
     themes: [
         {
             id: 1,
